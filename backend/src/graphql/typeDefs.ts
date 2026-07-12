@@ -35,11 +35,18 @@ export const typeDefs = `#graphql
     category: Category!
   }
 
+  type DashboardStats {
+    totalBalance: Int!
+    monthlyIncome: Int!
+    monthlyExpense: Int!
+  }
+  
   type Query {
     health: HealthCheck!
     me: User! 
     categories: [Category!]! 
     transactions(search: String, type: String, categoryId: String, month: Int, year: Int): [Transaction!]!
+    dashboardStats(month: Int!, year: Int!): DashboardStats!
   }
 
   type Mutation {

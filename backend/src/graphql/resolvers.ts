@@ -59,14 +59,23 @@ export const resolvers = {
 
       const userCategories = await prisma.category.findMany({
         where: { userId: context.user.userId },
+        include: {
+          transactions: true,
+        },
         orderBy: { name: "asc" },
       });
 
-      return userCategories.map((cat) => ({
-        ...cat,
-        transactionCount: 0,
-        totalAmount: 0,
-      }));
+      return userCategories.map((cat) => {
+        const totalAmount = cat.transactions.reduce(
+          (sum, tx) => sum + tx.amount,
+          0,
+        );
+        return {
+          ...cat,
+          transactionCount: cat.transactions.length,
+          totalAmount,
+        };
+      });
     },
     transactions: async (_: any, args: any, context: any) => {
       if (!context.user || !context.user.userId) {
@@ -124,6 +133,47 @@ export const resolvers = {
           totalAmount: 0,
         },
       }));
+    },
+    dashboardStats: async (_: any, args: any, context: any) => {
+      if (!context.user || !context.user.userId) {
+        throw new GraphQLError("Não autenticado.", {
+          extensions: { code: "UNAUTHENTICATED" },
+        });
+      }
+
+      const { month, year } = args;
+
+      const startDate = new Date(year, month - 1, 1);
+      const endDate = new Date(year, month, 0, 23, 59, 59, 999);
+
+      const monthlyTransactions = await prisma.transaction.findMany({
+        where: {
+          userId: context.user.userId,
+          date: {
+            gte: startDate,
+            lte: endDate,
+          },
+        },
+      });
+
+      let monthlyIncome = 0;
+      let monthlyExpense = 0;
+
+      monthlyTransactions.forEach((tx) => {
+        if (tx.type === "INCOME") {
+          monthlyIncome += tx.amount;
+        } else if (tx.type === "EXPENSE") {
+          monthlyExpense += tx.amount;
+        }
+      });
+
+      const totalBalance = monthlyIncome - monthlyExpense;
+
+      return {
+        totalBalance,
+        monthlyIncome,
+        monthlyExpense,
+      };
     },
   },
 
@@ -314,6 +364,19 @@ export const resolvers = {
       if (!category) {
         throw new GraphQLError(
           "Categoria não encontrada ou você não tem permissão.",
+          {
+            extensions: { code: "BAD_USER_INPUT" },
+          },
+        );
+      }
+
+      const transactionCount = await prisma.transaction.count({
+        where: { categoryId: id },
+      });
+
+      if (transactionCount > 0) {
+        throw new GraphQLError(
+          "Não é possível excluir uma categoria que possui transações vinculadas.",
           {
             extensions: { code: "BAD_USER_INPUT" },
           },
