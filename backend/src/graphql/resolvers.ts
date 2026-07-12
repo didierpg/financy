@@ -65,5 +65,37 @@ export const resolvers = {
         },
       };
     },
+    login: async (_: any, args: any) => {
+      const { email, password } = args;
+
+      const user = await prisma.user.findUnique({ where: { email } });
+      if (!user) {
+        throw new GraphQLError("E-mail ou senha incorretos.", {
+          extensions: {
+            code: "BAD_USER_INPUT",
+          },
+        });
+      }
+
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+      if (!isPasswordValid) {
+        throw new GraphQLError("E-mail ou senha incorretos.", {
+          extensions: {
+            code: "BAD_USER_INPUT",
+          },
+        });
+      }
+
+      const token = jwt.sign(
+        { userId: user.id },
+        process.env.JWT_SECRET as string,
+        { expiresIn: "7d" },
+      );
+
+      return {
+        token,
+        user: { id: user.id, name: user.name, email: user.email },
+      };
+    },
   },
 };
