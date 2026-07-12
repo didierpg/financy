@@ -24,11 +24,22 @@ export const typeDefs = `#graphql
     transactionCount: Int!
     totalAmount: Int!
   }
-  
+
+  type Transaction {
+    id: String!
+    description: String!
+    amount: Int!
+    type: String! # "INCOME" | "EXPENSE"
+    date: String!
+    categoryId: String!
+    category: Category!
+  }
+
   type Query {
     health: HealthCheck!
     me: User! 
     categories: [Category!]! 
+    transactions(search: String, type: String, categoryId: String, month: Int, year: Int): [Transaction!]!
   }
 
   type Mutation {
@@ -37,5 +48,8 @@ export const typeDefs = `#graphql
     createCategory(name: String!, description: String, icon: String!, color: String!): Category!
     updateCategory(id: String!, name: String!, description: String, icon: String!, color: String!): Category!
     deleteCategory(id: String!): Boolean!
+    createTransaction(description: String!, amount: Int!, type: String!, date: String!, categoryId: String!): Transaction!
+    updateTransaction(id: String!, description: String!, amount: Int!, type: String!, date: String!, categoryId: String!): Transaction!
+    deleteTransaction(id: String!): Boolean!
   }
 `;

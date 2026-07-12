@@ -68,6 +68,63 @@ export const resolvers = {
         totalAmount: 0,
       }));
     },
+    transactions: async (_: any, args: any, context: any) => {
+      if (!context.user || !context.user.userId) {
+        throw new GraphQLError("Não autenticado.", {
+          extensions: { code: "UNAUTHENTICATED" },
+        });
+      }
+
+      const { search, type, categoryId, month, year } = args;
+
+      const whereClause: any = {
+        userId: context.user.userId,
+      };
+
+      if (search) {
+        whereClause.description = {
+          contains: search,
+        };
+      }
+
+      if (type) {
+        whereClause.type = type;
+      }
+
+      if (categoryId) {
+        whereClause.categoryId = categoryId;
+      }
+
+      if (month && year) {
+        const startDate = new Date(year, month - 1, 1);
+        const endDate = new Date(year, month, 0, 23, 59, 59, 999);
+
+        whereClause.date = {
+          gte: startDate,
+          lte: endDate,
+        };
+      }
+
+      const list = await prisma.transaction.findMany({
+        where: whereClause,
+        include: {
+          category: true,
+        },
+        orderBy: {
+          date: "desc",
+        },
+      });
+
+      return list.map((t) => ({
+        ...t,
+        date: t.date.toISOString(),
+        category: {
+          ...t.category,
+          transactionCount: 0,
+          totalAmount: 0,
+        },
+      }));
+    },
   },
 
   Mutation: {
@@ -264,6 +321,152 @@ export const resolvers = {
       }
 
       await prisma.category.delete({
+        where: { id },
+      });
+
+      return true;
+    },
+    createTransaction: async (_: any, args: any, context: any) => {
+      if (!context.user || !context.user.userId) {
+        throw new GraphQLError("Não autenticado.", {
+          extensions: { code: "UNAUTHENTICATED" },
+        });
+      }
+
+      const { description, amount, type, date, categoryId } = args;
+
+      const category = await prisma.category.findFirst({
+        where: {
+          id: categoryId,
+          userId: context.user.userId,
+        },
+      });
+
+      if (!category) {
+        throw new GraphQLError(
+          "A categoria informada não existe ou não pertence a você.",
+          {
+            extensions: { code: "BAD_USER_INPUT" },
+          },
+        );
+      }
+
+      const newTransaction = await prisma.transaction.create({
+        data: {
+          description,
+          amount,
+          type,
+          date: new Date(date),
+          userId: context.user.userId,
+          categoryId,
+        },
+        include: {
+          category: true,
+        },
+      });
+
+      return {
+        ...newTransaction,
+        date: newTransaction.date.toISOString(),
+        category: {
+          ...newTransaction.category,
+          transactionCount: 0,
+          totalAmount: 0,
+        },
+      };
+    },
+    updateTransaction: async (_: any, args: any, context: any) => {
+      if (!context.user || !context.user.userId) {
+        throw new GraphQLError("Não autenticado.", {
+          extensions: { code: "UNAUTHENTICATED" },
+        });
+      }
+
+      const { id, description, amount, type, date, categoryId } = args;
+
+      const transaction = await prisma.transaction.findFirst({
+        where: {
+          id,
+          userId: context.user.userId,
+        },
+      });
+
+      if (!transaction) {
+        throw new GraphQLError(
+          "Transação não encontrada ou você não tem permissão.",
+          {
+            extensions: { code: "BAD_USER_INPUT" },
+          },
+        );
+      }
+
+      const category = await prisma.category.findFirst({
+        where: {
+          id: categoryId,
+          userId: context.user.userId,
+        },
+      });
+
+      if (!category) {
+        throw new GraphQLError(
+          "A categoria informada não existe ou não pertence a você.",
+          {
+            extensions: { code: "BAD_USER_INPUT" },
+          },
+        );
+      }
+
+      const updatedTransaction = await prisma.transaction.update({
+        where: { id },
+        data: {
+          description,
+          amount,
+          type,
+          date: new Date(date),
+          categoryId,
+        },
+        include: {
+          category: true,
+        },
+      });
+
+      return {
+        ...updatedTransaction,
+        date: updatedTransaction.date.toISOString(),
+        category: {
+          ...updatedTransaction.category,
+          transactionCount: 0,
+          totalAmount: 0,
+        },
+      };
+    },
+
+    deleteTransaction: async (_: any, args: any, context: any) => {
+      if (!context.user || !context.user.userId) {
+        throw new GraphQLError("Não autenticado.", {
+          extensions: { code: "UNAUTHENTICATED" },
+        });
+      }
+
+      const { id } = args;
+
+      const transaction = await prisma.transaction.findFirst({
+        where: {
+          id,
+          userId: context.user.userId,
+        },
+      });
+
+      if (!transaction) {
+        throw new GraphQLError(
+          "Transação não encontrada ou você não tem permissão.",
+          {
+            extensions: { code: "BAD_USER_INPUT" },
+          },
+        );
+      }
+
+      await prisma.transaction.delete({
         where: { id },
       });
 
