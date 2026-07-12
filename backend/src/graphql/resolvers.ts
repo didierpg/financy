@@ -24,6 +24,32 @@ export const resolvers = {
         );
       }
     },
+    me: async (_: any, __: any, context: any) => {
+      if (!context.user || !context.user.userId) {
+        throw new GraphQLError(
+          "Você precisa estar autenticado para acessar este recurso.",
+          {
+            extensions: { code: "UNAUTHENTICATED" },
+          },
+        );
+      }
+
+      const user = await prisma.user.findUnique({
+        where: { id: context.user.userId },
+      });
+
+      if (!user) {
+        throw new GraphQLError("Usuário não encontrado.", {
+          extensions: { code: "UNAUTHENTICATED" },
+        });
+      }
+
+      return {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+      };
+    },
   },
 
   Mutation: {

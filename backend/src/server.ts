@@ -1,22 +1,48 @@
 import { ApolloServer } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
-import { env } from "./env";
+import jwt from "jsonwebtoken";
 import { typeDefs } from "./graphql/typeDefs";
 import { resolvers } from "./graphql/resolvers";
+import { env } from "./env";
 
-async function bootstrap() {
-  const server = new ApolloServer({
-    typeDefs,
-    resolvers,
-  });
-
-  const { url } = await startStandaloneServer(server, {
-    listen: { port: env.PORT },
-  });
-
-  console.log(`🚀 Servidor GraphQL pronto em: ${url}`);
+interface UserContext {
+  userId?: string;
 }
 
-bootstrap().catch((err) => {
-  console.error("❌ Erro ao iniciar o servidor:", err);
+export interface MyContext {
+  user?: UserContext;
+}
+
+const server = new ApolloServer<MyContext>({
+  typeDefs,
+  resolvers,
 });
+
+async function startServer() {
+  const { url } = await startStandaloneServer(server, {
+    listen: { port: 4000 },
+    context: async ({ req }) => {
+      const authHeader = req.headers.authorization || "";
+
+      if (authHeader.startsWith("Bearer ")) {
+        const token = authHeader.split(" ")[1];
+
+        try {
+          const decoded = jwt.verify(token, env.JWT_SECRET as string) as {
+            userId: string;
+          };
+
+          return { user: { userId: decoded.userId } };
+        } catch (error) {
+          return {};
+        }
+      }
+
+      return {};
+    },
+  });
+
+  console.log(`🚀 Servidor pronto em: ${url}`);
+}
+
+startServer();
