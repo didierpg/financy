@@ -50,6 +50,24 @@ export const resolvers = {
         email: user.email,
       };
     },
+    categories: async (_: any, __: any, context: any) => {
+      if (!context.user || !context.user.userId) {
+        throw new GraphQLError("Não autenticado.", {
+          extensions: { code: "UNAUTHENTICATED" },
+        });
+      }
+
+      const userCategories = await prisma.category.findMany({
+        where: { userId: context.user.userId },
+        orderBy: { name: "asc" },
+      });
+
+      return userCategories.map((cat) => ({
+        ...cat,
+        transactionCount: 0,
+        totalAmount: 0,
+      }));
+    },
   },
 
   Mutation: {
@@ -122,6 +140,134 @@ export const resolvers = {
         token,
         user: { id: user.id, name: user.name, email: user.email },
       };
+    },
+
+    createCategory: async (_: any, args: any, context: any) => {
+      if (!context.user || !context.user.userId) {
+        throw new GraphQLError("Não autenticado.", {
+          extensions: { code: "UNAUTHENTICATED" },
+        });
+      }
+
+      const { name, description, icon, color } = args;
+
+      const categoryExists = await prisma.category.findUnique({
+        where: {
+          name_userId: {
+            name,
+            userId: context.user.userId,
+          },
+        },
+      });
+
+      if (categoryExists) {
+        throw new GraphQLError(
+          "Você já possui uma categoria cadastrada com este nome.",
+          {
+            extensions: { code: "BAD_USER_INPUT" },
+          },
+        );
+      }
+
+      const newCategory = await prisma.category.create({
+        data: {
+          name,
+          description,
+          icon,
+          color,
+          userId: context.user.userId,
+        },
+      });
+
+      return {
+        ...newCategory,
+        transactionCount: 0,
+        totalAmount: 0,
+      };
+    },
+    updateCategory: async (_: any, args: any, context: any) => {
+      if (!context.user || !context.user.userId) {
+        throw new GraphQLError("Não autenticado.", {
+          extensions: { code: "UNAUTHENTICATED" },
+        });
+      }
+
+      const { id, name, description, icon, color } = args;
+
+      const category = await prisma.category.findFirst({
+        where: {
+          id,
+          userId: context.user.userId,
+        },
+      });
+
+      if (!category) {
+        throw new GraphQLError(
+          "Categoria não encontrada ou você não tem permissão.",
+          {
+            extensions: { code: "BAD_USER_INPUT" },
+          },
+        );
+      }
+
+      if (name !== category.name) {
+        const nameExists = await prisma.category.findUnique({
+          where: {
+            name_userId: { name, userId: context.user.userId },
+          },
+        });
+
+        if (nameExists) {
+          throw new GraphQLError(
+            "Você já possui uma categoria cadastrada com este nome.",
+            {
+              extensions: { code: "BAD_USER_INPUT" },
+            },
+          );
+        }
+      }
+
+      const updatedCategory = await prisma.category.update({
+        where: { id },
+        data: { name, description, icon, color },
+      });
+
+      return {
+        ...updatedCategory,
+        transactionCount: 0,
+        totalAmount: 0,
+      };
+    },
+    deleteCategory: async (_: any, args: any, context: any) => {
+      if (!context.user || !context.user.userId) {
+        throw new GraphQLError("Não autenticado.", {
+          extensions: { code: "UNAUTHENTICATED" },
+        });
+      }
+
+      const { id } = args;
+
+      const category = await prisma.category.findFirst({
+        where: {
+          id,
+          userId: context.user.userId,
+        },
+      });
+
+      if (!category) {
+        throw new GraphQLError(
+          "Categoria não encontrada ou você não tem permissão.",
+          {
+            extensions: { code: "BAD_USER_INPUT" },
+          },
+        );
+      }
+
+      await prisma.category.delete({
+        where: { id },
+      });
+
+      return true;
     },
   },
 };
