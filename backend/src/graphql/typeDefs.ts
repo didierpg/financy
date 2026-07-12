@@ -3,8 +3,23 @@ export const typeDefs = `#graphql
     status: String!
     database: String!
   }
+  
+  type User {
+    id: String!
+    name: String!
+    email: String!
+  }
 
+  type AuthResponse {
+    token: String!
+    user: User!
+  }
+  
   type Query {
     health: HealthCheck!
+  }
+
+  type Mutation {
+    register(name: String!, email: String!, password: String!): AuthResponse!
   }
 `;
