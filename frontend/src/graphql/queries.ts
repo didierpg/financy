@@ -9,3 +9,17 @@ export const DASHBOARD_STATS_QUERY = gql(`
     }
   }
 `);
+
+export const CATEGORIES_QUERY = gql(`
+  query Categories {
+    categories {
+      id
+      name
+      description
+      icon
+      color
+      transactionCount
+      totalAmount
+    }
+  }
+`);

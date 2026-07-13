@@ -16,12 +16,20 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
 type Documents = {
     "\n  mutation Register($name: String!, $email: String!, $password: String!) {\n    register(name: $name, email: $email, password: $password) {\n      token\n      user {\n        email\n        id\n        name\n      }\n    }\n  }\n": typeof types.RegisterDocument,
     "\n  mutation Login($email: String!, $password: String!) {\n    login(email: $email, password: $password) {\n      token\n      user {\n        id\n        name\n        email\n      }\n    }\n  }\n": typeof types.LoginDocument,
+    "\n  mutation CreateCategory($name: String!, $icon: String!, $color: String!, $description: String) {\n    createCategory(name: $name, icon: $icon, color: $color, description: $description) {\n      id\n      name\n      description\n      icon\n      color\n      transactionCount\n      totalAmount\n    }\n  }\n": typeof types.CreateCategoryDocument,
+    "\n  mutation UpdateCategory($updateCategoryId: String!, $name: String!, $icon: String!, $color: String!, $description: String) {\n    updateCategory(id: $updateCategoryId, name: $name, icon: $icon, color: $color, description: $description) {\n      id\n      name\n      description\n      icon\n      color\n      transactionCount\n      totalAmount\n    }\n  }\n": typeof types.UpdateCategoryDocument,
+    "\n  mutation DeleteCategory($deleteCategoryId: String!) {\n    deleteCategory(id: $deleteCategoryId)\n  }\n": typeof types.DeleteCategoryDocument,
     "\n  query DashboardStats($month: Int!, $year: Int!) {\n    dashboardStats(month: $month, year: $year) {\n      totalBalance\n      monthlyIncome\n      monthlyExpense\n    }\n  }\n": typeof types.DashboardStatsDocument,
+    "\n  query Categories {\n    categories {\n      id\n      name\n      description\n      icon\n      color\n      transactionCount\n      totalAmount\n    }\n  }\n": typeof types.CategoriesDocument,
 };
 const documents: Documents = {
     "\n  mutation Register($name: String!, $email: String!, $password: String!) {\n    register(name: $name, email: $email, password: $password) {\n      token\n      user {\n        email\n        id\n        name\n      }\n    }\n  }\n": types.RegisterDocument,
     "\n  mutation Login($email: String!, $password: String!) {\n    login(email: $email, password: $password) {\n      token\n      user {\n        id\n        name\n        email\n      }\n    }\n  }\n": types.LoginDocument,
+    "\n  mutation CreateCategory($name: String!, $icon: String!, $color: String!, $description: String) {\n    createCategory(name: $name, icon: $icon, color: $color, description: $description) {\n      id\n      name\n      description\n      icon\n      color\n      transactionCount\n      totalAmount\n    }\n  }\n": types.CreateCategoryDocument,
+    "\n  mutation UpdateCategory($updateCategoryId: String!, $name: String!, $icon: String!, $color: String!, $description: String) {\n    updateCategory(id: $updateCategoryId, name: $name, icon: $icon, color: $color, description: $description) {\n      id\n      name\n      description\n      icon\n      color\n      transactionCount\n      totalAmount\n    }\n  }\n": types.UpdateCategoryDocument,
+    "\n  mutation DeleteCategory($deleteCategoryId: String!) {\n    deleteCategory(id: $deleteCategoryId)\n  }\n": types.DeleteCategoryDocument,
     "\n  query DashboardStats($month: Int!, $year: Int!) {\n    dashboardStats(month: $month, year: $year) {\n      totalBalance\n      monthlyIncome\n      monthlyExpense\n    }\n  }\n": types.DashboardStatsDocument,
+    "\n  query Categories {\n    categories {\n      id\n      name\n      description\n      icon\n      color\n      transactionCount\n      totalAmount\n    }\n  }\n": types.CategoriesDocument,
 };
 
 /**
@@ -49,7 +57,23 @@ export function gql(source: "\n  mutation Login($email: String!, $password: Stri
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function gql(source: "\n  mutation CreateCategory($name: String!, $icon: String!, $color: String!, $description: String) {\n    createCategory(name: $name, icon: $icon, color: $color, description: $description) {\n      id\n      name\n      description\n      icon\n      color\n      transactionCount\n      totalAmount\n    }\n  }\n"): (typeof documents)["\n  mutation CreateCategory($name: String!, $icon: String!, $color: String!, $description: String) {\n    createCategory(name: $name, icon: $icon, color: $color, description: $description) {\n      id\n      name\n      description\n      icon\n      color\n      transactionCount\n      totalAmount\n    }\n  }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n  mutation UpdateCategory($updateCategoryId: String!, $name: String!, $icon: String!, $color: String!, $description: String) {\n    updateCategory(id: $updateCategoryId, name: $name, icon: $icon, color: $color, description: $description) {\n      id\n      name\n      description\n      icon\n      color\n      transactionCount\n      totalAmount\n    }\n  }\n"): (typeof documents)["\n  mutation UpdateCategory($updateCategoryId: String!, $name: String!, $icon: String!, $color: String!, $description: String) {\n    updateCategory(id: $updateCategoryId, name: $name, icon: $icon, color: $color, description: $description) {\n      id\n      name\n      description\n      icon\n      color\n      transactionCount\n      totalAmount\n    }\n  }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n  mutation DeleteCategory($deleteCategoryId: String!) {\n    deleteCategory(id: $deleteCategoryId)\n  }\n"): (typeof documents)["\n  mutation DeleteCategory($deleteCategoryId: String!) {\n    deleteCategory(id: $deleteCategoryId)\n  }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function gql(source: "\n  query DashboardStats($month: Int!, $year: Int!) {\n    dashboardStats(month: $month, year: $year) {\n      totalBalance\n      monthlyIncome\n      monthlyExpense\n    }\n  }\n"): (typeof documents)["\n  query DashboardStats($month: Int!, $year: Int!) {\n    dashboardStats(month: $month, year: $year) {\n      totalBalance\n      monthlyIncome\n      monthlyExpense\n    }\n  }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n  query Categories {\n    categories {\n      id\n      name\n      description\n      icon\n      color\n      transactionCount\n      totalAmount\n    }\n  }\n"): (typeof documents)["\n  query Categories {\n    categories {\n      id\n      name\n      description\n      icon\n      color\n      transactionCount\n      totalAmount\n    }\n  }\n"];
 
 export function gql(source: string) {
   return (documents as any)[source] ?? {};

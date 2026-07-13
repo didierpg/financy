@@ -3,8 +3,15 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { X } from "lucide-react";
+import { useMutation } from "@apollo/client/react";
 import { cn } from "@/utils/cn";
 import { CATEGORY_COLORS, CATEGORY_ICONS } from "@/utils/category-themes";
+
+import {
+  CREATE_CATEGORY_MUTATION,
+  UPDATE_CATEGORY_MUTATION,
+} from "@/graphql/mutations";
+import { CATEGORIES_QUERY } from "@/graphql/queries";
 
 import { Input } from "@/components/Input";
 import { Button } from "@/components/Button";
@@ -40,6 +47,12 @@ export function CategoryModal({
 }: CategoryModalProps) {
   const isEditing = !!categoryToEdit;
 
+  const [createCategory] = useMutation(CREATE_CATEGORY_MUTATION, {
+    refetchQueries: [{ query: CATEGORIES_QUERY }],
+  });
+
+  const [updateCategory] = useMutation(UPDATE_CATEGORY_MUTATION);
+
   const {
     register,
     handleSubmit,
@@ -48,12 +61,6 @@ export function CategoryModal({
     formState: { errors, isSubmitting },
   } = useForm<CategoryModalFormData>({
     resolver: zodResolver(categoryModalSchema),
-    defaultValues: {
-      name: "",
-      description: "",
-      icon: "briefcase",
-      color: "green",
-    },
   });
 
   useEffect(() => {
@@ -61,7 +68,7 @@ export function CategoryModal({
       if (categoryToEdit) {
         reset({
           name: categoryToEdit.name,
-          description: categoryToEdit.description,
+          description: categoryToEdit.description || "",
           icon: categoryToEdit.icon,
           color: categoryToEdit.color,
         });
@@ -80,16 +87,32 @@ export function CategoryModal({
 
   const handleSave = async (data: CategoryModalFormData) => {
     try {
-      console.log("Dados submetidos no formulário do modal:", {
-        isEditing,
-        ...data,
-      });
+      if (isEditing && categoryToEdit) {
+        await updateCategory({
+          variables: {
+            updateCategoryId: categoryToEdit.id,
+            name: data.name,
+            icon: data.icon,
+            color: data.color,
+          },
+        });
+      } else {
+        await createCategory({
+          variables: {
+            name: data.name,
+            icon: data.icon,
+            color: data.color,
+            description: data.description || null,
+          },
+        });
+      }
       onClose();
-    } catch (err) {
-      console.error(err);
+    } catch (err: any) {
+      const graphQLErrorMessage =
+        err.graphQLErrors?.[0]?.message || err.message;
+      alert(graphQLErrorMessage || "Ocorreu um erro ao salvar a categoria.");
     }
   };
-
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-100 animate-fade-in animate-duration-200">
       <div className="bg-white w-full max-w-md rounded-2xl p-6 shadow-xl flex flex-col gap-6 relative max-h-[90vh] overflow-y-auto">
@@ -152,6 +175,7 @@ export function CategoryModal({
                               "border-brand-base ring-2 ring-brand-base/20 text-brand-base font-semibold",
                           )}
                         >
+                          <img />
                           <IconComponent className="w-4 h-4" />
                         </button>
                       );
@@ -160,11 +184,6 @@ export function CategoryModal({
                 </div>
               )}
             />
-            {errors.icon && (
-              <span className="text-xs font-medium text-danger tracking-tight mt-0.5">
-                {errors.icon.message}
-              </span>
-            )}
           </div>
 
           <div className="flex flex-col gap-1.5 text-left">
@@ -202,11 +221,6 @@ export function CategoryModal({
                 </div>
               )}
             />
-            {errors.color && (
-              <span className="text-xs font-medium text-danger tracking-tight mt-0.5">
-                {errors.color.message}
-              </span>
-            )}
           </div>
 
           <Button
@@ -215,7 +229,7 @@ export function CategoryModal({
             className="w-full h-12 text-base font-semibold bg-brand-base hover:bg-brand-dark mt-2"
             disabled={isSubmitting}
           >
-            Salvar
+            {isSubmitting ? "Salvando..." : "Salvar"}
           </Button>
         </form>
       </div>
