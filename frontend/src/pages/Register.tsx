@@ -1,11 +1,15 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useMutation } from "@apollo/client/react";
+
+import { REGISTER_MUTATION } from "@/graphql/mutations";
+
 import { Input } from "@/components/Input";
 import { Button } from "@/components/Button";
 import { Wallet, User, Mail, Lock, Eye, EyeOff, LogIn } from "lucide-react";
-import { useState } from "react";
 
 const registerSchema = z.object({
   name: z.string().min(1, "O nome completo é obrigatório."),
@@ -19,7 +23,11 @@ const registerSchema = z.object({
 type RegisterFormData = z.infer<typeof registerSchema>;
 
 export function Register() {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const [apiError, setApiError] = useState("");
+
+  const [registerUser] = useMutation(REGISTER_MUTATION);
 
   const {
     register,
@@ -29,8 +37,26 @@ export function Register() {
     resolver: zodResolver(registerSchema),
   });
 
-  const handleRegister = (data: RegisterFormData) => {
-    console.log("Dados validados e prontos para a API de Back-end:", data);
+  const handleRegister = async (formData: RegisterFormData) => {
+    setApiError("");
+    try {
+      const { data } = await registerUser({
+        variables: {
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+        },
+      });
+
+      if (data?.register?.token) {
+        localStorage.setItem("@financy:token", data.register.token);
+        navigate("/login");
+      }
+    } catch (err: any) {
+      setApiError(
+        err.message || "Ocorreu um erro ao tentar criar a sua conta.",
+      );
+    }
   };
 
   return (
@@ -93,6 +119,12 @@ export function Register() {
             }
             {...register("password")}
           />
+
+          {apiError && (
+            <div className="p-3 bg-red-light border border-red-base/20 rounded-lg text-xs font-medium text-danger text-left">
+              {apiError}
+            </div>
+          )}
 
           <Button
             type="submit"
