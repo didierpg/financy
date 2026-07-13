@@ -25,14 +25,24 @@ export const typeDefs = `#graphql
     totalAmount: Int!
   }
 
+  enum TransactionType {
+    INCOME
+    EXPENSE
+  }
+
   type Transaction {
     id: String!
     description: String!
     amount: Int!
-    type: String! # "INCOME" | "EXPENSE"
+    type: TransactionType! 
     date: String!
     categoryId: String!
     category: Category!
+  }
+
+  type TransactionResponse {
+    items: [Transaction!]!
+    totalCount: Int!
   }
 
   type DashboardStats {
@@ -45,7 +55,7 @@ export const typeDefs = `#graphql
     health: HealthCheck!
     me: User! 
     categories: [Category!]! 
-    transactions(search: String, type: String, categoryId: String, month: Int, year: Int): [Transaction!]!
+    transactions(search: String, type: TransactionType, categoryId: String, month: Int, year: Int, page: Int, limit: Int): TransactionResponse!
     dashboardStats(month: Int!, year: Int!): DashboardStats!
   }
 
@@ -55,8 +65,8 @@ export const typeDefs = `#graphql
     createCategory(name: String!, description: String, icon: String!, color: String!): Category!
     updateCategory(id: String!, name: String!, description: String, icon: String!, color: String!): Category!
     deleteCategory(id: String!): Boolean!
-    createTransaction(description: String!, amount: Int!, type: String!, date: String!, categoryId: String!): Transaction!
-    updateTransaction(id: String!, description: String!, amount: Int!, type: String!, date: String!, categoryId: String!): Transaction!
+    createTransaction(description: String!, amount: Int!, type: TransactionType!, date: String!, categoryId: String!): Transaction!
+    updateTransaction(id: String!, description: String!, amount: Int!, type: TransactionType!, date: String!, categoryId: String!): Transaction!
     deleteTransaction(id: String!): Boolean!
   }
 `;

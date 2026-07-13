@@ -84,7 +84,7 @@ export const resolvers = {
         });
       }
 
-      const { search, type, categoryId, month, year } = args;
+      const { search, type, categoryId, month, year, page, limit } = args;
 
       const whereClause: any = {
         userId: context.user.userId,
@@ -114,25 +114,37 @@ export const resolvers = {
         };
       }
 
-      const list = await prisma.transaction.findMany({
-        where: whereClause,
-        include: {
-          category: true,
-        },
-        orderBy: {
-          date: "desc",
-        },
-      });
+      const take = limit ? Number(limit) : undefined;
+      const skip =
+        page && limit ? (Number(page) - 1) * Number(limit) : undefined;
 
-      return list.map((t) => ({
-        ...t,
-        date: t.date.toISOString(),
-        category: {
-          ...t.category,
-          transactionCount: 0,
-          totalAmount: 0,
-        },
-      }));
+      const [totalCount, list] = await Promise.all([
+        prisma.transaction.count({ where: whereClause }),
+        prisma.transaction.findMany({
+          where: whereClause,
+          include: {
+            category: true,
+          },
+          orderBy: {
+            date: "desc",
+          },
+          take,
+          skip,
+        }),
+      ]);
+
+      return {
+        totalCount,
+        items: list.map((t) => ({
+          ...t,
+          date: t.date.toISOString(),
+          category: {
+            ...t.category,
+            transactionCount: 0,
+            totalAmount: 0,
+          },
+        })),
+      };
     },
     dashboardStats: async (_: any, args: any, context: any) => {
       if (!context.user || !context.user.userId) {

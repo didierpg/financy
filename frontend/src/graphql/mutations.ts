@@ -59,3 +59,73 @@ export const DELETE_CATEGORY_MUTATION = gql(`
     deleteCategory(id: $deleteCategoryId)
   }
 `);
+
+export const CREATE_TRANSACTION_MUTATION = gql(`
+  mutation CreateTransaction(
+    $description: String!
+    $amount: Int!
+    $type: TransactionType!
+    $date: String!
+    $categoryId: String!
+  ) {
+    createTransaction(
+      description: $description
+      amount: $amount
+      type: $type
+      date: $date
+      categoryId: $categoryId
+    ) {
+      id
+      description
+      amount
+      type
+      date
+      category {
+        id
+        name
+        color
+        icon
+      }
+    }
+  }
+`);
+
+// Mutation para atualizar uma transação existente
+export const UPDATE_TRANSACTION_MUTATION = gql(`
+  mutation UpdateTransaction(
+    $id: String!
+    $description: String!
+    $amount: Int!
+    $type: TransactionType!
+    $date: String!
+    $categoryId: String!
+  ) {
+    updateTransaction(
+      id: $id
+      description: $description
+      amount: $amount
+      type: $type
+      date: $date
+      categoryId: $categoryId
+    ) {
+      id
+      description
+      amount
+      type
+      date
+      category {
+        id
+        name
+        color
+        icon
+      }
+    }
+  }
+`);
+
+// Mutation para deletar uma transação
+export const DELETE_TRANSACTION_MUTATION = gql(`
+  mutation DeleteTransaction($id: String!) {
+    deleteTransaction(id: $id)
+  }
+`);
