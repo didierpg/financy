@@ -1,0 +1,1 @@
+export function Categories() { return <h1 className="text-xl font-bold">Página de Categorias</h1>; }

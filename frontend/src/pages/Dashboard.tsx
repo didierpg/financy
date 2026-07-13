@@ -1,0 +1,1 @@
+export function Dashboard() { return <h1 className="text-xl font-bold">Estrutura base do Dashboard</h1>; }
