@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { Link } from "react-router-dom";
 import { Input } from "@/components/Input";
 import { Button } from "@/components/Button";
 import { Wallet, User, Mail, Lock, Eye, EyeOff, LogIn } from "lucide-react";
@@ -112,10 +113,12 @@ export function Register() {
 
         <div className="flex flex-col items-center gap-4">
           <p className="text-sm text-gray-600 font-medium">Já tem uma conta?</p>
-          <Button variant="outline" className="flex items-center gap-2">
-            <LogIn className="w-4 h-4" />
-            Fazer login
-          </Button>
+          <Link to="/login" className="w-full">
+            <Button variant="outline" className="flex items-center gap-2">
+              <LogIn className="w-4 h-4" />
+              Fazer login
+            </Button>
+          </Link>
         </div>
       </div>
     </div>

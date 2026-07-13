@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { Link } from "react-router-dom";
 import { Input } from "@/components/Input";
 import { Button } from "@/components/Button";
 import { Wallet, Mail, Lock, Eye, EyeOff, UserPlus } from "lucide-react";
@@ -16,11 +17,7 @@ const loginSchema = z.object({
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
-interface LoginProps {
-  onNavigateToRegister?: () => void;
-}
-
-export function Login({ onNavigateToRegister }: LoginProps) {
+export function Login() {
   const [showPassword, setShowPassword] = useState(false);
 
   const {
@@ -45,7 +42,7 @@ export function Login({ onNavigateToRegister }: LoginProps) {
       <div className="w-full max-w-md bg-white p-8 rounded-xl border border-gray-200 shadow-xs">
         <div className="mb-6 text-center">
           <h1 className="text-xl font-bold text-gray-800 tracking-tight">
-            Acesse sua conta
+            Fazer login
           </h1>
           <p className="text-sm text-gray-500 mt-1">
             Entre na sua conta para continuar
@@ -88,6 +85,23 @@ export function Login({ onNavigateToRegister }: LoginProps) {
             {...register("password")}
           />
 
+          <div className="flex items-center justify-between w-full mt-0.5 text-xs font-medium">
+            <label className="flex items-center gap-2 text-gray-600 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                className="w-4 h-4 rounded border-gray-300 text-brand-base focus:ring-brand-base/20 accent-brand-base cursor-pointer"
+              />
+              <span>Lembrar-me</span>
+            </label>
+            <button
+              type="button"
+              className="text-brand-base hover:text-brand-dark cursor-pointer transition-colors"
+              onClick={() => console.log("Escopo futuro: Recuperação de senha")}
+            >
+              Recuperar senha
+            </button>
+          </div>
+
           <Button
             type="submit"
             variant="primary"
@@ -109,14 +123,12 @@ export function Login({ onNavigateToRegister }: LoginProps) {
           <p className="text-sm text-gray-600 font-medium">
             Ainda não tem uma conta?
           </p>
-          <Button
-            variant="outline"
-            className="flex items-center gap-2"
-            onClick={onNavigateToRegister}
-          >
-            <UserPlus className="w-4 h-4" />
-            Criar conta
-          </Button>
+          <Link to="/register" className="w-full">
+            <Button variant="outline" className="flex items-center gap-2">
+              <UserPlus className="w-4 h-4" />
+              Criar conta
+            </Button>
+          </Link>
         </div>
       </div>
     </div>
