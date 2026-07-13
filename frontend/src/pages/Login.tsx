@@ -2,10 +2,12 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Input } from "@/components/Input";
 import { Button } from "@/components/Button";
 import { Wallet, Mail, Lock, Eye, EyeOff, UserPlus } from "lucide-react";
+import { useMutation } from "@apollo/client/react";
+import { LOGIN_MUTATION } from "@/graphql/mutations";
 
 const loginSchema = z.object({
   email: z
@@ -18,7 +20,11 @@ const loginSchema = z.object({
 type LoginFormData = z.infer<typeof loginSchema>;
 
 export function Login() {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const [apiError, setApiError] = useState("");
+
+  const [loginUser] = useMutation(LOGIN_MUTATION);
 
   const {
     register,
@@ -28,8 +34,27 @@ export function Login() {
     resolver: zodResolver(loginSchema),
   });
 
-  const handleLogin = (data: LoginFormData) => {
-    console.log("Dados prontos para a mutation de Login:", data);
+  const handleLogin = async (formData: LoginFormData) => {
+    setApiError("");
+    try {
+      const { data } = await loginUser({
+        variables: {
+          email: formData.email,
+          password: formData.password,
+        },
+      });
+
+      if (data?.login?.token) {
+        localStorage.setItem("@financy:token", data.login.token);
+
+        console.log("Login efetuado com sucesso para:", data.login.user?.name);
+        navigate("/");
+      }
+    } catch (err: any) {
+      setApiError(
+        err.message || "Credenciais inválidas. Verifique seu e-mail e senha.",
+      );
+    }
   };
 
   return (
@@ -96,11 +121,16 @@ export function Login() {
             <button
               type="button"
               className="text-brand-base hover:text-brand-dark cursor-pointer transition-colors"
-              onClick={() => console.log("Escopo futuro: Recuperação de senha")}
             >
               Recuperar senha
             </button>
           </div>
+
+          {apiError && (
+            <div className="p-3 bg-red-light border border-red-base/20 rounded-lg text-xs font-medium text-danger text-left">
+              {apiError}
+            </div>
+          )}
 
           <Button
             type="submit"
