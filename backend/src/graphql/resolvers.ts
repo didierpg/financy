@@ -260,6 +260,33 @@ export const resolvers = {
         user: { id: user.id, name: user.name, email: user.email },
       };
     },
+    updateMe: async (_: any, { name }: { name: string }, context: any) => {
+      if (!context.user || !context.user.userId) {
+        throw new GraphQLError(
+          "Você precisa estar autenticado para realizar esta ação.",
+          {
+            extensions: { code: "UNAUTHENTICATED" },
+          },
+        );
+      }
+
+      if (!name.trim()) {
+        throw new GraphQLError("O nome não pode estar vazio.", {
+          extensions: { code: "BAD_USER_INPUT" },
+        });
+      }
+
+      const updatedUser = await prisma.user.update({
+        where: { id: context.user.userId },
+        data: { name: name.trim() },
+      });
+
+      return {
+        id: updatedUser.id,
+        name: updatedUser.name,
+        email: updatedUser.email,
+      };
+    },
 
     createCategory: async (_: any, args: any, context: any) => {
       if (!context.user || !context.user.userId) {

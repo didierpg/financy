@@ -61,6 +61,7 @@ export const typeDefs = `#graphql
 
   type Mutation {
     register(name: String!, email: String!, password: String!): AuthResponse!
+    updateMe(name: String!): User!
     login(email: String!, password: String!): AuthResponse!
     createCategory(name: String!, description: String, icon: String!, color: String!): Category!
     updateCategory(id: String!, name: String!, description: String, icon: String!, color: String!): Category!

@@ -26,6 +26,16 @@ export const LOGIN_MUTATION = gql(`
   }
 `);
 
+export const UPDATE_ME_MUTATION = gql(`
+  mutation UpdateMe($name: String!) {
+    updateMe(name: $name) {
+      id
+      name
+      email
+    }
+  }
+`);
+
 export const CREATE_CATEGORY_MUTATION = gql(`
   mutation CreateCategory($name: String!, $icon: String!, $color: String!, $description: String) {
     createCategory(name: $name, icon: $icon, color: $color, description: $description) {
