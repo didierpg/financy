@@ -4,12 +4,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Link, useNavigate } from "react-router-dom";
 import { useMutation } from "@apollo/client/react";
-
 import { REGISTER_MUTATION } from "@/graphql/mutations";
-
 import { Input } from "@/components/Input";
 import { Button } from "@/components/Button";
-import { Wallet, User, Mail, Lock, Eye, EyeOff, LogIn } from "lucide-react";
+import { User, Mail, Lock, Eye, EyeOff, LogIn } from "lucide-react";
+import { Logo } from "@/components/Logo";
 
 const registerSchema = z.object({
   name: z.string().min(1, "O nome completo é obrigatório."),
@@ -63,9 +62,8 @@ export function Register() {
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
-      <div className="flex items-center gap-2 text-brand-dark font-bold text-2xl tracking-tight mb-6">
-        <Wallet className="w-7 h-7 text-brand-base" />
-        <span>FINANCY</span>
+      <div className="text-brand-dark flex items-center justify-center mb-6">
+        <Logo />
       </div>
 
       <div className="w-full max-w-md bg-white p-8 rounded-xl border border-gray-200 shadow-xs">

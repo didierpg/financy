@@ -1,8 +1,8 @@
 import { NavLink, Outlet, Link } from "react-router-dom";
-import { Wallet } from "lucide-react";
 import { useQuery } from "@apollo/client/react";
 import { ME_QUERY } from "@/graphql/queries";
 import { UserAvatar } from "./UserAvatar";
+import { Logo } from "./Logo";
 
 export function AppLayout() {
   const { data, loading } = useQuery(ME_QUERY, {
@@ -12,9 +12,8 @@ export function AppLayout() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col font-sans antialiased">
       <header className="w-full bg-white border-b border-gray-100 h-20 px-12 flex items-center justify-between sticky top-0 z-50">
-        <div className="flex items-center gap-2 text-brand-dark font-bold text-xl tracking-tight select-none">
-          <Wallet className="w-6 h-6 text-brand-base" />
-          <span>FINANCY</span>
+      <div className="text-brand-dark flex items-center justify-center mb-6">
+          <Logo />
         </div>
 
         <nav className="flex items-center gap-8 h-full">
