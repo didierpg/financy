@@ -160,9 +160,7 @@ export function TransactionModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
-      {/* Removido o overflow-hidden para o Select poder vazar livremente para fora */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-xl w-full max-w-md relative animate-in zoom-in-95 duration-200">
-        {/* Cabeçalho */}
         <div className="p-6 pb-4 flex items-start justify-between">
           <div className="text-left">
             <h2 className="text-xl font-bold text-gray-800">
@@ -180,9 +178,7 @@ export function TransactionModal({
           </button>
         </div>
 
-        {/* Formulário */}
         <form onSubmit={handleSubmit} className="p-6 pt-2 flex flex-col gap-5">
-          {/* 1. Tipo de Transação (Topo) */}
           <div className="bg-white border border-gray-100 p-1.5 rounded-xl grid grid-cols-2 gap-2 shadow-xs">
             <button
               type="button"
@@ -214,7 +210,6 @@ export function TransactionModal({
             </button>
           </div>
 
-          {/* 2. Campo: Descrição */}
           <Input
             label="Descrição"
             placeholder="Ex. Almoço no restaurante"
@@ -224,9 +219,7 @@ export function TransactionModal({
             required
           />
 
-          {/* 3. Grid de Data e depois Valor */}
           <div className="grid grid-cols-2 gap-4">
-            {/* Campo: Data */}
             <div className="flex flex-col gap-1.5 text-left w-full">
               <label className="text-sm font-semibold text-gray-700">
                 Data
@@ -241,7 +234,6 @@ export function TransactionModal({
               />
             </div>
 
-            {/* Campo: Valor */}
             <div className="flex flex-col gap-1.5 text-left w-full">
               <label className="text-sm font-semibold text-gray-700">
                 Valor
@@ -262,7 +254,6 @@ export function TransactionModal({
               </div>
             </div>
           </div>
-          {/* 4. Campo: Categoria (Embaixo) */}
           <div className="relative z-20">
             <Select
               key={
@@ -278,7 +269,6 @@ export function TransactionModal({
             />
           </div>
 
-          {/* Botão Salvar */}
           <button
             type="submit"
             disabled={isLoading}

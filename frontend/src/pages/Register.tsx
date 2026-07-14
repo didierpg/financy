@@ -50,6 +50,8 @@ export function Register() {
 
       if (data?.register?.token) {
         localStorage.setItem("@financy:token", data.register.token);
+        navigate("/");
+      } else {
         navigate("/login");
       }
     } catch (err: any) {

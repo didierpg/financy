@@ -165,7 +165,7 @@ export function Categories() {
 
         <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-xs flex items-center gap-4">
           <div
-            className={`w-12 h-12 rounded-xl flex items-center justify-center ${mostUsedColorTheme ? ` ${mostUsedColorTheme.textClass}` : "bg-blue-light text-blue-base"}`}
+            className={`w-12 h-12 rounded-xl flex items-center justify-center ${mostUsedColorTheme ? ` ${mostUsedColorTheme.textClass}` : ""}`}
           >
             <MostUsedIconComponent className="w-5 h-5" />
           </div>

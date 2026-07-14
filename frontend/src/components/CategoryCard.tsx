@@ -22,7 +22,6 @@ export function CategoryCard({ category, onEdit, onDelete }: CategoryCardProps) 
   return (
     <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-xs flex flex-col gap-4 relative hover:shadow-sm transition-shadow">
       
-      {/* Topo: Ícone e Ações rápidas */}
       <div className="flex items-center justify-between">
         <CategoryIcon iconName={category.icon} colorName={category.color} />
         
@@ -42,7 +41,6 @@ export function CategoryCard({ category, onEdit, onDelete }: CategoryCardProps) 
         </div>
       </div>
 
-      {/* Centro: Título e Descrição */}
       <div className="flex flex-col gap-1 min-h-[72px]">
         <h3 className="font-bold text-gray-800 text-base tracking-tight">{category.name}</h3>
         <p className="text-xs text-gray-400 font-medium leading-relaxed line-clamp-2">
@@ -50,7 +48,6 @@ export function CategoryCard({ category, onEdit, onDelete }: CategoryCardProps) 
         </p>
       </div>
 
-      {/* Rodapé: Badge Colorido e Contador */}
       <div className="flex items-center justify-between pt-2 border-t border-gray-100 mt-auto">
         <CategoryBadge name={category.name} colorName={category.color} />
         <span className="text-xs text-gray-400 font-medium">

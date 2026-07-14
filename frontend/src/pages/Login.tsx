@@ -47,7 +47,6 @@ export function Login() {
       if (data?.login?.token) {
         localStorage.setItem("@financy:token", data.login.token);
 
-        console.log("Login efetuado com sucesso para:", data.login.user?.name);
         navigate("/");
       }
     } catch (err: any) {

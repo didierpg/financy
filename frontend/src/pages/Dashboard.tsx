@@ -108,9 +108,7 @@ export function Dashboard() {
 
   return (
     <div className="flex flex-col gap-8 w-full">
-      {/* Cards de Resumos de Saldo/Receita/Despesa */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
-        {/* Saldo Total */}
         <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-xs flex flex-col gap-2">
           <div className="flex items-center gap-2 text-gray-400">
             <div className="w-8 h-8 rounded-lg flex items-center justify-center">
@@ -125,7 +123,6 @@ export function Dashboard() {
           </span>
         </div>
 
-        {/* Receitas do Mês */}
         <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-xs flex flex-col gap-2">
           <div className="flex items-center gap-2 text-gray-400">
             <div className="w-8 h-8 rounded-lg flex items-center justify-center">
@@ -140,10 +137,9 @@ export function Dashboard() {
           </span>
         </div>
 
-        {/* Despesas do Mês */}
         <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-xs flex flex-col gap-2">
           <div className="flex items-center gap-2 text-gray-400">
-            <div className="w-8 h-8 rounded-lg bg-rose-50 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center">
               <ArrowDownCircle className="w-4 h-4 text-rose-500" />
             </div>
             <span className="text-xs font-bold uppercase tracking-wider">
@@ -156,9 +152,7 @@ export function Dashboard() {
         </div>
       </div>
 
-      {/* Grid Inferior: Transações Recentes + Categorias */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-        {/* Bloco de Transações Recentes */}
         <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-200 shadow-xs flex flex-col overflow-hidden">
           <div className="p-6 border-b border-gray-100 flex items-center justify-between">
             <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">
@@ -253,7 +247,6 @@ export function Dashboard() {
           </div>
         </div>
 
-        {/* Bloco de Categorias Acumuladas */}
         <div className="bg-white rounded-2xl border border-gray-200 shadow-xs flex flex-col overflow-hidden">
           <div className="p-6 border-b border-gray-100 flex items-center justify-between">
             <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">
@@ -309,7 +302,6 @@ export function Dashboard() {
         </div>
       </div>
 
-      {/* Modal de Transação Reativa */}
       <TransactionModal
         isOpen={isModalOpen}
         onClose={handleModalClose}
